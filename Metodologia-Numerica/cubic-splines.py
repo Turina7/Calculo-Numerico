@@ -72,9 +72,16 @@ def get_splines(x,y):
     # N splines 
     n = len(x) - 1
     
+    equations = get_equations(x,y)
+    variable_matrix = equations[:, :4*n]
+    constant_matrix = equations[:, 4*n]
+
+    # Import gaussian elimination and solve
+    
     # Splines
     # a0*x³ + b0*x² + c0*x + d0 -> [a0, b0, c0, d0]
     splines = np.zeros((n, 4), dtype=float)
-print(get_equations(x,y))
+
+
 
 
