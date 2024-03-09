@@ -10,10 +10,6 @@ def get_equations(x, y):
     # Number of splines
     n = len(x) - 1
 
-    # N splines 
-    # a0*x³ + b0*x² + c0*x + d0 -> [a0, b0, c0, d0]
-    splines = np.zeros((n, 4), dtype=float)
-
     # Equations
     equations = np.zeros((4*n,4*n + 1),dtype=float)
     # equations = [[equation0], [equation1], ..., [euqationN-1]]
@@ -72,6 +68,13 @@ def get_equations(x, y):
 
     return equations
 
-
+def get_splines(x,y):
+    # N splines 
+    n = len(x) - 1
+    
+    # Splines
+    # a0*x³ + b0*x² + c0*x + d0 -> [a0, b0, c0, d0]
+    splines = np.zeros((n, 4), dtype=float)
 print(get_equations(x,y))
+
 
