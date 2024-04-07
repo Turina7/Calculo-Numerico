@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 from tabulate import tabulate  
 
@@ -28,8 +29,8 @@ THETA2P_0 = 0
 ############## PARÂMETROS ################
 M1 = 0.2
 M2 = 0.2
-L1 = 1
-L2 = 1
+L1 = 0.84
+L2 = 0.84
 G = 9.8
 
 ############# FUNÇÃO DERIVADA ###########
@@ -49,8 +50,8 @@ if MODELO == "pendulo":
     ####### APROXIMAÇÃO PENDULO DUPLO ########
     t0 = 0
     y0 = np.array([THETA1_0, THETA2_0, THETA1P_0, THETA2P_0])
-    h = 0.1
-    n = 200
+    h = 0.01
+    n = 400
 
     # Iterar para calcular a posição em vários passos de tempo usando RK3
     t_values_rk = [t0]
@@ -114,8 +115,40 @@ if MODELO == "pendulo":
     plt.grid(True)
     plt.show()
 
+    ### plotagem no plano x, y
+    def update_line_position(x0, y0, length, angle_radians):
+        # Calculate new end coordinates
+        x = x0 + length * math.sin(angle_radians)
+        y = y0 - length * math.cos(angle_radians)  # Negative sign for Y due to inverted Y-axis in matplotlib
+        return x, y
 
+    x1_values = []
+    y1_values = []
+    x2_values = []
+    y2_values = []
 
+    # Calculate x and y values for each y1 value using the update_line_position function
+    for i in y1_values_rk:
+        x, y = update_line_position(0, 0, L1, i)
+        x1_values.append(x)
+        y1_values.append(y)
+
+    count = 0
+    for j in y2_values_rk:
+        x, y = update_line_position(x1_values[count], y1_values[count], L2, j)
+        x2_values.append(x)
+        y2_values.append(y)
+        count += 1
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(x1_values, y1_values, label='Mass 1')
+    plt.plot(x2_values, y2_values, label='Mass 2')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.title('Double Pendulum Movement')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
     
 # ------------------- OSCILADOR HARMÔNICO SIMPLES -------------------
 
