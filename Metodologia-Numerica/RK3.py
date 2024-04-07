@@ -19,7 +19,7 @@ def RK3(f, tk, yk, h):
 # --------------------- PENDULO DUPLO ---------------------
 
 ############ CONDIÇÕES INICIAIS ###########
-THETA1_0 = np.radians(180)
+THETA1_0 = np.radians(90)
 THETA2_0 = np.radians(60)
 
 
@@ -51,7 +51,7 @@ if MODELO == "pendulo":
     t0 = 0
     y0 = np.array([THETA1_0, THETA2_0, THETA1P_0, THETA2P_0])
     h = 0.01
-    n = 400
+    n = 3000
 
     # Iterar para calcular a posição em vários passos de tempo usando RK3
     t_values_rk = [t0]
@@ -70,13 +70,19 @@ if MODELO == "pendulo":
         y1_values_rk.append(y[0])
         y2_values_rk.append(y[1])
 
-    ####### APROXIMAÇÃO PENDULO DUPLO ########
+    ####### APROXIMAÇÃO PENDULO DUPLO DIF ########
     t0 = 0
-    y0 = np.array([np.radians(180.018), np.radians(60.006), THETA1P_0, THETA2P_0])
-    h = 0.1
+    dif = 1.01 #Diferença em % do valor original (1%)
+    THETA1_0_dif = THETA1_0 * dif
+    THETA2_0_dif = THETA2_0 * dif
+
+    #Não quero mudar isso
+    THETA1P_0_dif = THETA1P_0
+    THETA2P_0_dif = THETA2P_0
+
+    y0 = np.array([THETA1_0_dif, THETA2_0_dif, THETA1P_0_dif, THETA2P_0_dif])
     
 
-    # Iterar para calcular a posição em vários passos de tempo usando RK3
     t_values_rk = [t0]
     y1_values_rk_dif = [y0[0]] # Valores de theta1
     y2_values_rk_dif = [y0[1]] # Valores de theta2
@@ -106,16 +112,16 @@ if MODELO == "pendulo":
 
     # Plotar theta1 e theta2 em função do temp
     plt.figure(figsize=(8, 6))
-    plt.plot(t_values_rk, y1_values_rk, label='Aproximação de Runge-Kutta')
-    plt.plot(t_values_rk, y1_values_rk_dif, label='Aproximação de Runge-Kutta dif', linestyle='--')
+    plt.plot(t_values_rk, y1_values_rk, label='Pêndulo (8° e 4°)')
+    plt.plot(t_values_rk, y1_values_rk_dif, label='Pêndulo (8.08° e 4.04°)', linestyle='--')
     plt.xlabel('Tempo')
     plt.ylabel('Ângulo')
-    plt.title('Ângulos theta1 e theta2 - Aproximação de Runge-Kutta para o Movimento de Pendulo Duplo')
+    plt.title('Ângulos da massa 2 - Análise de pequenos ângulos')
     plt.legend()
     plt.grid(True)
     plt.show()
 
-    ### plotagem no plano x, y
+    ### plotagem no plano x, y do caso 1
     def update_line_position(x0, y0, length, angle_radians):
         # Calculate new end coordinates
         x = x0 + length * math.sin(angle_radians)
@@ -141,11 +147,40 @@ if MODELO == "pendulo":
         count += 1
 
     plt.figure(figsize=(8, 6))
-    plt.plot(x1_values, y1_values, label='Mass 1')
-    plt.plot(x2_values, y2_values, label='Mass 2')
+    plt.plot(x1_values, y1_values, label='Massa 1')
+    plt.plot(x2_values, y2_values, label='Massa 2', linestyle='--')
     plt.xlabel('X')
     plt.ylabel('Y')
-    plt.title('Double Pendulum Movement')
+    plt.title('Movimento do pendulo duplo (90° e 60°)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+    #No caso dif
+    x1_values_dif = []
+    y1_values_dif = []
+    x2_values_dif = []
+    y2_values_dif = []
+
+    # Calculate x and y values for each y1 value using the update_line_position function
+    for i in y1_values_rk_dif:
+        x, y = update_line_position(0, 0, L1, i)
+        x1_values_dif.append(x)
+        y1_values_dif.append(y)
+
+    count = 0
+    for j in y2_values_rk_dif:
+        x, y = update_line_position(x1_values_dif[count], y1_values_dif[count], L2, j)
+        x2_values_dif.append(x)
+        y2_values_dif.append(y)
+        count += 1
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(x1_values_dif, y1_values_dif, label='Massa 1')
+    plt.plot(x2_values_dif, y2_values_dif, label='Massa 2', linestyle='--')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.title('Movimento do pendulo duplo (90.9° e 60.6°)')
     plt.legend()
     plt.grid(True)
     plt.show()
