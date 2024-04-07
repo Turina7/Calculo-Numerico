@@ -18,22 +18,23 @@ def RK3(f, tk, yk, h):
 # --------------------- PENDULO DUPLO ---------------------
 
 ############ CONDIÇÕES INICIAIS ###########
-THETA1_0 = np.radians(8)
-THETA2_0 = np.radians(4)
+THETA1_0 = np.radians(180)
+THETA2_0 = np.radians(60)
+
 
 THETA1P_0 = 0
 THETA2P_0 = 0
 
 ############## PARÂMETROS ################
-M1 = 1
-M2 = 1
+M1 = 0.2
+M2 = 0.2
 L1 = 1
 L2 = 1
 G = 9.8
 
 ############# FUNÇÃO DERIVADA ###########
 def f(t, y):
-  print(y)
+#   print(y)
   theta1, theta2, theta1p, theta2p = y
   # Retorna a derivada de cada componente de y 
   # [theta1, that2, theta1p, theta2p] -> [theta1p, theta2p, theta1pp, theta2pp]
@@ -41,7 +42,7 @@ def f(t, y):
                    theta2p,
                    ( -G*(2*M1 + M2)*np.sin(theta1) -M2*G*np.sin(theta1 - 2*theta2) -2*np.sin(theta1 - theta2) * M2*(theta2p**2*L2 + theta1p**2*L1 * np.cos(theta1-theta2)))
                      / (L1 * (2*M1 + M2 -M2*np.cos(2*theta1 - 2*theta2))),
-                   (2*np.sin(theta1 - theta2) * (theta1p**2*L1*(M1+M2)) + G*(M1+M2)*np.cos(theta1) + theta2p**2*L2 *M2*np.cos(theta1-theta2))
+                   (2*np.sin(theta1 - theta2) * (theta1p**2*L1*(M1+M2) + G*(M1+M2)*np.cos(theta1) + theta2p**2*L2 *M2*np.cos(theta1-theta2)))
                      / (L2 * (2*M1 + M2 -M2*np.cos(2*theta1 - 2*theta2)))])
 
 if MODELO == "pendulo":
@@ -49,7 +50,7 @@ if MODELO == "pendulo":
     t0 = 0
     y0 = np.array([THETA1_0, THETA2_0, THETA1P_0, THETA2P_0])
     h = 0.1
-    n = 100
+    n = 200
 
     # Iterar para calcular a posição em vários passos de tempo usando RK3
     t_values_rk = [t0]
@@ -60,13 +61,38 @@ if MODELO == "pendulo":
     y = y0
     t = t0
 
-    ##### LOOP PARA MHS #####
+    ##### LOOP #####
     for _ in range(num_steps):
         y = RK3(f, t, y, h)
         t += h
         t_values_rk.append(t)
         y1_values_rk.append(y[0])
         y2_values_rk.append(y[1])
+
+    ####### APROXIMAÇÃO PENDULO DUPLO ########
+    t0 = 0
+    y0 = np.array([np.radians(180.018), np.radians(60.006), THETA1P_0, THETA2P_0])
+    h = 0.1
+    
+
+    # Iterar para calcular a posição em vários passos de tempo usando RK3
+    t_values_rk = [t0]
+    y1_values_rk_dif = [y0[0]] # Valores de theta1
+    y2_values_rk_dif = [y0[1]] # Valores de theta2
+    num_steps = n
+
+    y = y0
+    t = t0
+
+    ##### LOOP #####
+    for _ in range(num_steps):
+        y = RK3(f, t, y, h)
+        t += h
+        t_values_rk.append(t)
+        y1_values_rk_dif.append(y[0])
+        y2_values_rk_dif.append(y[1])
+
+    
 
     # Criar uma tabela com os dados
     # x_table_data = []
@@ -80,7 +106,7 @@ if MODELO == "pendulo":
     # Plotar theta1 e theta2 em função do temp
     plt.figure(figsize=(8, 6))
     plt.plot(t_values_rk, y1_values_rk, label='Aproximação de Runge-Kutta')
-    plt.plot(t_values_rk, y2_values_rk, label='Aproximação de Runge-Kutta', linestyle='--')
+    plt.plot(t_values_rk, y1_values_rk_dif, label='Aproximação de Runge-Kutta dif', linestyle='--')
     plt.xlabel('Tempo')
     plt.ylabel('Ângulo')
     plt.title('Ângulos theta1 e theta2 - Aproximação de Runge-Kutta para o Movimento de Pendulo Duplo')
