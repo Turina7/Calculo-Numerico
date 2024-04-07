@@ -19,8 +19,11 @@ def RK3(f, tk, yk, h):
 # --------------------- PENDULO DUPLO ---------------------
 
 ############ CONDIÇÕES INICIAIS ###########
-THETA1_0 = np.radians(90)
-THETA2_0 = np.radians(60)
+angle1 = 90
+angle2 = 60
+
+THETA1_0 = np.radians(angle1)
+THETA2_0 = np.radians(angle2)
 
 
 THETA1P_0 = 0
@@ -71,12 +74,13 @@ if MODELO == "pendulo":
         y2_values_rk.append(y[1])
 
     ####### APROXIMAÇÃO PENDULO DUPLO DIF ########
+    # Pequena mudança nas condicoes iniciais
     t0 = 0
-    dif = 1.01 #Diferença em % do valor original (1%)
+    dif = 1.001 # Multiplicador (+0.1%)
     THETA1_0_dif = THETA1_0 * dif
     THETA2_0_dif = THETA2_0 * dif
 
-    #Não quero mudar isso
+    # Velocidade inciial permance nula
     THETA1P_0_dif = THETA1P_0
     THETA2P_0_dif = THETA2P_0
 
@@ -110,12 +114,23 @@ if MODELO == "pendulo":
     # headers = ["Tempo", " Theta 1 - RK3", "Theta 2 - RK3"]
     # print(tabulate(x_table_data, headers=headers))
 
-    # Plotar theta1 e theta2 em função do temp
+    # Plotar theta1 com e sem variacao das condicoes iniciais
     plt.figure(figsize=(8, 6))
-    plt.plot(t_values_rk, y1_values_rk, label='Pêndulo (8° e 4°)')
-    plt.plot(t_values_rk, y1_values_rk_dif, label='Pêndulo (8.08° e 4.04°)', linestyle='--')
-    plt.xlabel('Tempo')
-    plt.ylabel('Ângulo')
+    plt.plot(t_values_rk, y1_values_rk, label= f'theta1 = {angle1}° e theta2 = {angle2}°')
+    plt.plot(t_values_rk, y1_values_rk_dif, label=f'theta1 = {round(angle1*dif,2)}° e theta2 = {round(angle2*dif,2)}°', linestyle='--')
+    plt.xlabel('Tempo (s)')
+    plt.ylabel('Ângulo (rad)')
+    plt.title('Ângulos da massa 1 - Análise de pequenos ângulos')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+    # Plotar theta1 com e sem variacao das condicoes iniciais
+    plt.figure(figsize=(8, 6))
+    plt.plot(t_values_rk, y2_values_rk, label= f'theta1 = {round(angle1*dif,2)}° e theta2 = {round(angle2*dif,2)}°')
+    plt.plot(t_values_rk, y2_values_rk_dif, label=f'theta1 = {round(angle1*dif,2)}° e theta2 = {round(angle2*dif,2)}°', linestyle='--')
+    plt.xlabel('Tempo (s)')
+    plt.ylabel('Ângulo (rad)')
     plt.title('Ângulos da massa 2 - Análise de pequenos ângulos')
     plt.legend()
     plt.grid(True)
@@ -149,9 +164,9 @@ if MODELO == "pendulo":
     plt.figure(figsize=(8, 6))
     plt.plot(x1_values, y1_values, label='Massa 1')
     plt.plot(x2_values, y2_values, label='Massa 2', linestyle='--')
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.title('Movimento do pendulo duplo (90° e 60°)')
+    plt.xlabel('X (m)')
+    plt.ylabel('Y (m)')
+    plt.title(f'Movimento do pendulo duplo (theta1 = {angle1}° e theta2 = {angle2}°)')
     plt.legend()
     plt.grid(True)
     plt.show()
@@ -178,9 +193,9 @@ if MODELO == "pendulo":
     plt.figure(figsize=(8, 6))
     plt.plot(x1_values_dif, y1_values_dif, label='Massa 1')
     plt.plot(x2_values_dif, y2_values_dif, label='Massa 2', linestyle='--')
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.title('Movimento do pendulo duplo (90.9° e 60.6°)')
+    plt.xlabel('X (m)')
+    plt.ylabel('Y (m)')
+    plt.title(f'Movimento do pendulo duplo (theta1 = {round(angle1*dif,2)}° e theta2 = {round(angle2*dif,2)}°)')
     plt.legend()
     plt.grid(True)
     plt.show()
