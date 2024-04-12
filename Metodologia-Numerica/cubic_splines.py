@@ -2,15 +2,15 @@ import numpy as np
 from gaussian_elimination import gauss_elimination
 import matplotlib.pyplot as plt
 
-h = 0.1
-t0 = 0
-n_pontos = 100
-t = np.arange(t0, n_pontos * h, h)
+# h = 0.1
+# t0 = 0
+# n_pontos = 100
+# t = np.arange(t0, n_pontos * h, h)
 
-def f3grau(t, a, b, c, d):
-    return a*t**3 + b*t**2 + c*t + d
+# def f3grau(t, a, b, c, d):
+#     return a*t**3 + b*t**2 + c*t + d
 
-y = f3grau(t, 1, 2, 3, 4)
+# y = f3grau(t, 1, 2, 3, 4)
 
 
 # Example
@@ -145,18 +145,18 @@ def spline_aproximation(x, splines, n=10):
     y[-1] = a*x[-1]**3 + b*x[-1]**2 + c*x[-1] + d
     return y, t
 
-y_aproximado, t_splines = spline_aproximation(t, get_splines(t,y))
+# y_aproximado, t_splines = spline_aproximation(t, get_splines(t,y))
 
-# Visualizar solução analítica e aproximada
-plt.figure(figsize=(8, 6))
-plt.plot(t, y, label='Solução Analítica')
-plt.plot(t_splines, y_aproximado, label='Aproximação por Splines Cúbicas', linestyle='--')
-plt.xlabel('Tempo')
-plt.ylabel('Posição')
-plt.title('Comparação entre Solução Analítica e aproximação por Splines Cúbicas de função de 3° grau')
-plt.legend()
-plt.grid(True)
-plt.show()
+# # Visualizar solução analítica e aproximada
+# plt.figure(figsize=(8, 6))
+# plt.plot(t, y, label='Solução Analítica')
+# plt.plot(t_splines, y_aproximado, label='Aproximação por Splines Cúbicas', linestyle='--')
+# plt.xlabel('Tempo')
+# plt.ylabel('Posição')
+# plt.title('Comparação entre Solução Analítica e aproximação por Splines Cúbicas de função de 3° grau')
+# plt.legend()
+# plt.grid(True)
+# plt.show()
 
 
 
