@@ -2,15 +2,20 @@ import numpy as np
 from gaussian_elimination import gauss_elimination
 import matplotlib.pyplot as plt
 
-# h = 0.1
-# t0 = 0
-# n_pontos = 100
-# t = np.arange(t0, n_pontos * h, h)
+# Habilita a validação do código de splines
+teste_splines = False
 
-# def f3grau(t, a, b, c, d):
-#     return a*t**3 + b*t**2 + c*t + d
+if teste_splines:
 
-# y = f3grau(t, 1, 2, 3, 4)
+    h = 0.1
+    t0 = 0
+    n_pontos = 100
+    t = np.arange(t0, n_pontos * h, h)
+
+    def f3grau(t, a, b, c, d):
+        return a*t**3 + b*t**2 + c*t + d
+
+    y = f3grau(t, 1, 2, 3, 4)
 
 
 # Example
@@ -112,20 +117,7 @@ def get_splines(x,y):
 
 # print(get_splines(t,y))
 
-# def spline_aproximation(x, splines):
-#     n = len(splines)
-#     y = np.zeros(len(x))
-#     for i in range(n):
-#         a = splines[i][0]
-#         b = splines[i][1]
-#         c = splines[i][2]
-#         d = splines[i][3]
 
-#         for j in range(len(x)):
-#             if x[j] >= t[i] and x[j] <= t[i+1]:
-#                 y[j] = a*x[j]**3 + b*x[j]**2 + c*x[j] + d
-
-#     return y
 
 def spline_aproximation(x, splines, n=10):
     n_splines = len(splines)
@@ -145,47 +137,18 @@ def spline_aproximation(x, splines, n=10):
     y[-1] = a*x[-1]**3 + b*x[-1]**2 + c*x[-1] + d
     return y, t
 
-# y_aproximado, t_splines = spline_aproximation(t, get_splines(t,y))
+if teste_splines:
+    y_aproximado, t_splines = spline_aproximation(t, get_splines(t,y))
 
-# # Visualizar solução analítica e aproximada
-# plt.figure(figsize=(8, 6))
-# plt.plot(t, y, label='Solução Analítica')
-# plt.plot(t_splines, y_aproximado, label='Aproximação por Splines Cúbicas', linestyle='--')
-# plt.xlabel('Tempo')
-# plt.ylabel('Posição')
-# plt.title('Comparação entre Solução Analítica e aproximação por Splines Cúbicas de função de 3° grau')
-# plt.legend()
-# plt.grid(True)
-# plt.show()
-
-
-
+    # Visualizar solução analítica e aproximada
+    plt.figure(figsize=(8, 6))
+    plt.plot(t, y, label='Solução Analítica')
+    plt.plot(t_splines, y_aproximado, label='Aproximação por Splines Cúbicas', linestyle='--')
+    plt.xlabel('t')
+    plt.ylabel('f(t)')
+    plt.title('Comparação entre Solução Analítica e aproximação por Splines Cúbicas de função de 3° grau')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 
- # Gerar tabela para latex
-# def imprimir_tabela(tempo, solucao_analitica, aproximacao_spline):
-#   """
-#   Função que recebe 3 arrays de NumPy e imprime uma tabela formatada.
-
-#   Argumentos:
-#     tempo: Array de NumPy com os valores de tempo.
-#     solucao_analitica: Array de NumPy com os valores da solução analítica.
-#     aproximacao_spline: Array de NumPy com os valores da aproximação por splines cúbicas naturais.
-
-#   Retorno:
-#     Nenhum. A função imprime a tabela formatada no console.
-#   """
-
-#   # Imprimindo cabeçalho da tabela
-#   print("Tempo & Solução Analítica & Aproximação por Splines Cúbicas Naturais\\")
-#   print("\\hline")
-
-#   # Percorrendo os arrays e imprimindo cada linha da tabela
-#   for i in range(len(tempo)):
-#     print(f"{tempo[i]:.1f} & {solucao_analitica[i]:.5f} & {aproximacao_spline[i]:.5f}")
-
-#   # Imprimindo linha final da tabela
-#   print("\\hline")
-
-# # Gerar tabela
-# # imprimir_tabela(t, y, y_aproximado)
