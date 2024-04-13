@@ -50,11 +50,81 @@ def f(t, y):
                    (2*np.sin(theta1 - theta2) * (theta1p**2*L1*(M1+M2) + G*(M1+M2)*np.cos(theta1) + theta2p**2*L2 *M2*np.cos(theta1-theta2)))
                      / (L2 * (2*M1 + M2 -M2*np.cos(2*theta1 - 2*theta2)))])
 
+def estimar_ordem_convergencia(n_estimativas, t_fixo, h_inicial, num_steps_inicial, t0, y0):
+    ordens_convg = []
+    
+    for i in range(n_estimativas):
+        h = h_inicial/(2**i)
+        num_steps = num_steps_inicial*(2**i)
+        y = y0
+        t = t0
+
+        # h
+        for _ in range(num_steps):
+            y = RK3(f, t, y, h)
+            t += h
+            if abs(t-t_fixo) < h*2:
+                print("entrei")
+                y_h = y
+                break
+            # print("saí")
+        
+        # h/2
+        h = h/2
+        num_steps = num_steps*2
+        y = y0
+        t = t0
+        for _ in range(num_steps):
+            y = RK3(f, t, y, h)
+            t += h
+            if abs(t-t_fixo) < h:
+                y_h2 = y
+                break
+        
+        # 2h
+        h = h*4
+        num_steps = int(num_steps/4)
+        y = y0
+        t = t0
+        for _ in range(num_steps):
+            y = RK3(f, t, y, h)
+            t += h
+            if abs(t-t_fixo) < h:
+                y_2h = y
+                break
+
+        print("Valores para t = ", t_fixo)
+        print("h = ", h*4)
+        print("y_h = ", y_h)
+        print("y_h2 = ", y_h2)
+        print("y_2h = ", y_2h)
+
+        # Calcular estimativa da ordem de convergencia
+        ord_conv = np.log2(abs((y_2h - y_h)/(y_h - y_h2)))
+        ordens_convg.append(ord_conv)
+    
+    print("Valores de convergência: ")
+    for i in ordens_convg:
+        print(f"y1 = {i[0]}, y2 = {i[1]}")
+    
+    ordem1 = 0
+    ordem2 = 0
+    for i in ordens_convg:
+        ordem1 += i[0]
+        ordem2 += i[1]
+    return ordem1/n_estimativas, ordem2/n_estimativas
+
+
+            
+
+
+
+
 if MODELO == "pendulo":
     ####### APROXIMAÇÃO PENDULO DUPLO ########
     t0 = 0
     y0 = np.array([THETA1_0, THETA2_0, THETA1P_0, THETA2P_0])
-    h = 0.01
+    h = 0.05
     n = 1000
 
     # Iterar para calcular a posição em vários passos de tempo usando RK3
@@ -72,94 +142,14 @@ if MODELO == "pendulo":
     y = y0
     t = t0
 
-    ##### LOOP #####
-    for _ in range(num_steps*2):
-        y = RK3(f, t, y, h)
-        t += h
-        t_values_rk.append(t)
-        y1_values_rk.append(y[0])
-        y2_values_rk.append(y[1])
-
-    print(t_values_rk[:20])
-
-
-    h=0.002
-    t = t0
-    y=y0
-
-    for _ in range(num_steps):
-        y = RK3(f, t, y, h)
-        t += h
-        t_values_rk_2t.append(t)
-        y1_values_rk_2t.append(y[0])
-        y2_values_rk_2t.append(y[1])
-
-    h=0.0005
-    t=t0
-    y=y0
-
-    for _ in range(num_steps*4):
-        y = RK3(f, t, y, h)
-        t += h
-        t_values_rk_ts2.append(t)
-        y1_values_rk_ts2.append(y[0])
-        y2_values_rk_ts2.append(y[1])
-
-    ####### APROXIMAÇÃO PENDULO DUPLO DIF ########
-    # Pequena mudança nas condicoes iniciais
-    t0 = 0
-    dif = 1.001 # Multiplicador (+0.1%)
-    THETA1_0_dif = THETA1_0 * dif
-    THETA2_0_dif = THETA2_0 * dif
-
-    # Velocidade inciial permance nula
-    THETA1P_0_dif = THETA1P_0
-    THETA2P_0_dif = THETA2P_0
-
-    y0 = np.array([THETA1_0_dif, THETA2_0_dif, THETA1P_0_dif, THETA2P_0_dif])
-    
-
-    # t_values_rk = [t0]
-    # y1_values_rk_dif = [y0[0]] # Valores de theta1
-    # y2_values_rk_dif = [y0[1]] # Valores de theta2
-    # num_steps = n
-
-    # y = y0
-    # t = t0
-
-    ##### LOOP #####
-    # for _ in range(num_steps):
-    #     y = RK3(f, t, y, h)
-    #     t += h
-    #     t_values_rk.append(t)
-    #     y1_values_rk_dif.append(y[0])
-    #     y2_values_rk_dif.append(y[1])
-
-    # print((t_values_rk))
-    # print((t_values_rk_2t))
-    # print((t_values_rk_ts2))
-
-    print("AQUIIIIIIIII")
-
-    print(t_values_rk[:20:2])
-    print(t_values_rk_2t[:10])
-
-    print(y1_values_rk[:20:2])
-    print(y1_values_rk_2t[:10])
-    print(y1_values_rk_ts2[:40:4])
-
-    rodar = True
-    n_1 = [  ]
-    n_2 = [  ]
-    n_x = []
-    if rodar:
-        for i in range(1000):
-            n_x.append(i*2*0.001)
-
-            print('----------Resultado\n')
-            n_1.append(np.log2(abs((y1_values_rk_2t[i] - y1_values_rk[i*2])/(y1_values_rk[i*2] - y1_values_rk_ts2[i*4]))))
-            n_2.append(np.log2(abs((y2_values_rk_2t[i] - y2_values_rk[i*2])/(y2_values_rk[i*2] - y2_values_rk_ts2[i*4]))))
-
+    # Calcular ordem do erro de convergencia
+    n_estimativas = 5
+    t_fixo = 2
+    h_inicial = 0.005
+    num_steps_inicial = 3000
+    ordem = estimar_ordem_convergencia(n_estimativas, t_fixo, h_inicial, num_steps_inicial, t0, y0)
+    print("Ordem de convergência: ", ordem)
+  
     # Criar uma tabela com os dados
     # x_table_data = []
     # for t, theta1_rk, theta2_rk in zip(t_values_rk, y1_values_rk, y2_values_rk):
@@ -169,28 +159,28 @@ if MODELO == "pendulo":
     # headers = ["Tempo", " Theta 1 - RK3", "Theta 2 - RK3"]
     # print(tabulate(x_table_data, headers=headers))
         
-    y1_splines = sp.get_splines(t_values_rk[:1000:10], y1_values_rk[:1000:10])
-    y2_splines = sp.get_splines(t_values_rk[:1000:10], y2_values_rk[:1000:10])
+    # y1_splines = sp.get_splines(t_values_rk[:1000:10], y1_values_rk[:1000:10])
+    # y2_splines = sp.get_splines(t_values_rk[:1000:10], y2_values_rk[:1000:10])
 
     # y1_splines_dif = sp.get_splines(t_values_rk, y1_values_rk_dif)
     # y2_splines_dif = sp.get_splines(t_values_rk, y2_values_rk_dif)
 
-    y1_values_spline, t_splines = sp.spline_aproximation(t_values_rk, y1_splines)
-    y2_values_spline, t_splines = sp.spline_aproximation(t_values_rk, y2_splines)
+    # y1_values_spline, t_splines = sp.spline_aproximation(t_values_rk, y1_splines)
+    # y2_values_spline, t_splines = sp.spline_aproximation(t_values_rk, y2_splines)
 
     # y1_values_spline_dif, t_splines = sp.spline_aproximation(t_values_rk, y1_splines_dif)
     # y2_values_spline_dif, t_splines = sp.spline_aproximation(t_values_rk, y2_splines_dif)
 
-    # # Plotar erro com e sem variacao das condicoes iniciais
-    plt.figure(figsize=(8, 6))
-    # plt.plot(t_splines, y1_values_spline, label= f'Ordem do erro do  ângulo 1')
-    plt.plot(t_values_rk, y1_values_rk, label= f'Ordem do erro do ângulo 2', linestyle='--')
-    plt.xlabel('Tempo (s)')
-    plt.ylabel('Ordem do erro de convergência')
-    plt.title('')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+    # # # Plotar erro com e sem variacao das condicoes iniciais
+    # plt.figure(figsize=(8, 6))
+    # # plt.plot(t_splines, y1_values_spline, label= f'Ordem do erro do  ângulo 1')
+    # plt.plot(t_values_rk, y1_values_rk, label= f'Ordem do erro do ângulo 2', linestyle='--')
+    # plt.xlabel('Tempo (s)')
+    # plt.ylabel('Ordem do erro de convergência')
+    # plt.title('')
+    # plt.legend()
+    # plt.grid(True)
+    # plt.show()
 
 
             
@@ -221,15 +211,15 @@ if MODELO == "pendulo":
     
 
     # Plotar theta1 com e sem variacao das condicoes iniciais
-    plt.figure(figsize=(8, 6))
-    plt.plot(t_values_rk, y1_values_rk, label= f'theta1 = {angle1}° e theta2 = {angle2}°')
-    # plt.plot(t_values_rk, y1_values_rk_dif, label=f'theta1 = {round(angle1*dif,2)}° e theta2 = {round(angle2*dif,2)}°', linestyle='--')
-    plt.xlabel('Tempo (s)')
-    plt.ylabel('Ângulo (rad)')
-    plt.title('Ângulos da massa 1 - Extremo de baixa energia')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+    # plt.figure(figsize=(8, 6))
+    # plt.plot(t_values_rk, y1_values_rk, label= f'theta1 = {angle1}° e theta2 = {angle2}°')
+    # # plt.plot(t_values_rk, y1_values_rk_dif, label=f'theta1 = {round(angle1*dif,2)}° e theta2 = {round(angle2*dif,2)}°', linestyle='--')
+    # plt.xlabel('Tempo (s)')
+    # plt.ylabel('Ângulo (rad)')
+    # plt.title('Ângulos da massa 1 - Extremo de baixa energia')
+    # plt.legend()
+    # plt.grid(True)
+    # plt.show()
 
     # # Plotar theta2 com e sem variacao das condicoes iniciais
     # plt.figure(figsize=(8, 6))
@@ -242,30 +232,30 @@ if MODELO == "pendulo":
     # plt.grid(True)
     # plt.show()
 
-    ### plotagem no plano x, y do caso 1
-    def update_line_position(x0, y0, length, angle_radians):
-        # Calculate new end coordinates
-        x = x0 + length * math.sin(angle_radians)
-        y = y0 - length * math.cos(angle_radians)  # Negative sign for Y due to inverted Y-axis in matplotlib
-        return x, y
+    # ### plotagem no plano x, y do caso 1
+    # def update_line_position(x0, y0, length, angle_radians):
+    #     # Calculate new end coordinates
+    #     x = x0 + length * math.sin(angle_radians)
+    #     y = y0 - length * math.cos(angle_radians)  # Negative sign for Y due to inverted Y-axis in matplotlib
+    #     return x, y
 
-    x1_values = []
-    y1_values = []
-    x2_values = []
-    y2_values = []
+    # x1_values = []
+    # y1_values = []
+    # x2_values = []
+    # y2_values = []
 
-    # Calculate x and y values for each y1 value using the update_line_position function
-    for i in y1_values_rk:
-        x, y = update_line_position(0, 0, L1, i)
-        x1_values.append(x)
-        y1_values.append(y)
+    # # Calculate x and y values for each y1 value using the update_line_position function
+    # for i in y1_values_rk:
+    #     x, y = update_line_position(0, 0, L1, i)
+    #     x1_values.append(x)
+    #     y1_values.append(y)
 
-    count = 0
-    for j in y2_values_rk:
-        x, y = update_line_position(x1_values[count], y1_values[count], L2, j)
-        x2_values.append(x)
-        y2_values.append(y)
-        count += 1
+    # count = 0
+    # for j in y2_values_rk:
+    #     x, y = update_line_position(x1_values[count], y1_values[count], L2, j)
+    #     x2_values.append(x)
+    #     y2_values.append(y)
+    #     count += 1
 
     # plt.figure(figsize=(8, 6))
     # plt.plot(x1_values, y1_values, label='Massa 1')
@@ -278,10 +268,10 @@ if MODELO == "pendulo":
     # plt.show()
 
     #No caso dif
-    x1_values_dif = []
-    y1_values_dif = []
-    x2_values_dif = []
-    y2_values_dif = []
+    # x1_values_dif = []
+    # y1_values_dif = []
+    # x2_values_dif = []
+    # y2_values_dif = []
 
     # Calculate x and y values for each y1 value using the update_line_position function
     # for i in y1_values_rk_dif:
