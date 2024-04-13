@@ -1,14 +1,11 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from tabulate import tabulate 
-
-# Altere as condições iniciais e parametros como desejar
-# Busque no código por "Condições iniciais"
+from tabulate import tabulate  
 
 # Definir qual dos modelos irá simular
 # "pendulo", "mhs" ou null
-MODELO = "pendulo"
+MODELO = "mhs"
 
 ########### RUNGE KUTTA 3a ORDEM ###########
 def RK3(f, tk, yk, h):
@@ -32,7 +29,7 @@ THETA2_0 = np.radians(angle2)
 THETA1P_0 = 0
 THETA2P_0 = 0
 
-############## PARÂMETROS ################
+############## PARÂMETROS ###############
 M1 = 0.2
 M2 = 0.2
 L1 = 0.84
@@ -72,8 +69,6 @@ if MODELO == "pendulo":
     for _ in range(num_steps):
         y = RK3(f, t, y, h)
         t += h
-        if (abs(t-2)) < 0.01:
-            print("Aqui ó: " ,y)
         t_values_rk.append(t)
         y1_values_rk.append(y[0])
         y2_values_rk.append(y[1])
@@ -288,9 +283,9 @@ if MODELO == "mhs":
     plt.figure(figsize=(8, 6))
     plt.plot(t_values_analytical, y_values_analytical, label='Solução Analítica')
     plt.plot(t_values_rk, y_values_rk, label='Aproximação de Runge-Kutta', linestyle='--')
-    plt.xlabel('Tempo')
-    plt.ylabel('Posição')
-    plt.title('Posição - Comparação entre Solução Analítica e de Runge-Kutta para o Movimento de Oscilador Harmônico')
+    plt.xlabel('Tempo (s)')
+    plt.ylabel('Posição (m)')
+    plt.title('Comparação entre Solução Analítica e de Runge-Kutta para posição do MHS')
     plt.legend()
     plt.grid(True)
     plt.show()
