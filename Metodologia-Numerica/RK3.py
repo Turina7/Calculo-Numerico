@@ -1,7 +1,10 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from tabulate import tabulate  
+from tabulate import tabulate 
+
+# Altere as condições iniciais e parametros como desejar
+# Busque no código por "Condições iniciais"
 
 # Definir qual dos modelos irá simular
 # "pendulo", "mhs" ou null
@@ -69,6 +72,8 @@ if MODELO == "pendulo":
     for _ in range(num_steps):
         y = RK3(f, t, y, h)
         t += h
+        if (abs(t-2)) < 0.01:
+            print("Aqui ó: " ,y)
         t_values_rk.append(t)
         y1_values_rk.append(y[0])
         y2_values_rk.append(y[1])
@@ -300,4 +305,3 @@ if MODELO == "mhs":
     plt.legend()
     plt.grid(True)
     plt.show()
-

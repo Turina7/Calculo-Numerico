@@ -1,7 +1,8 @@
 '''
 Neste código é feita a aproximação dos ângulos
 do pêndulo duplo com o método RK3, que é comparada
-com a interpolação por splines cubicas
+com a interpolação por splines cubicas de pontos 
+selecionados dessa aproximação.
 '''
 
 import numpy as np
@@ -9,9 +10,10 @@ import math
 import matplotlib.pyplot as plt
 from tabulate import tabulate  
 import cubic_splines as sp
+# Altere as condições iniciais e parametros como desejar
+# Busque no código por "Condições iniciais"
 
-# Definir qual dos modelos irá simular
-# "pendulo", "mhs" ou null
+
 MODELO = "pendulo"
 
 ########### RUNGE KUTTA 3a ORDEM ###########
@@ -139,193 +141,6 @@ if MODELO == "pendulo":
     plt.xlabel('Tempo (s)')
     plt.ylabel('Ângulo (rad)')
     plt.title('Interpolação do ângulo theta1 por splines cubicas utilizando 100 pontos')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-
-    # # Plotar theta1 com e sem variacao das condicoes iniciais
-    # plt.figure(figsize=(8, 6))
-    # plt.plot(t_values_rk, y1_values_rk, label= f'theta1 = {angle1}° e theta2 = {angle2}°')
-    # plt.plot(t_values_rk, y1_values_rk_dif, label=f'theta1 = {round(angle1*dif,2)}° e theta2 = {round(angle2*dif,2)}°', linestyle='--')
-    # plt.xlabel('Tempo (s)')
-    # plt.ylabel('Ângulo (rad)')
-    # plt.title('Ângulos da massa 1 - Análise de pequenos ângulos')
-    # plt.legend()
-    # plt.grid(True)
-    # plt.show()
-
-    # # Plotar theta1 com e sem variacao das condicoes iniciais
-    # plt.figure(figsize=(8, 6))
-    # plt.plot(t_values_rk, y2_values_rk, label= f'theta1 = {round(angle1*dif,2)}° e theta2 = {round(angle2*dif,2)}°')
-    # plt.plot(t_values_rk, y2_values_rk_dif, label=f'theta1 = {round(angle1*dif,2)}° e theta2 = {round(angle2*dif,2)}°', linestyle='--')
-    # plt.xlabel('Tempo (s)')
-    # plt.ylabel('Ângulo (rad)')
-    # plt.title('Ângulos da massa 2 - Análise de pequenos ângulos')
-    # plt.legend()
-    # plt.grid(True)
-    # plt.show()
-
-    # ### plotagem no plano x, y do caso 1
-    # def update_line_position(x0, y0, length, angle_radians):
-    #     # Calculate new end coordinates
-    #     x = x0 + length * math.sin(angle_radians)
-    #     y = y0 - length * math.cos(angle_radians)  # Negative sign for Y due to inverted Y-axis in matplotlib
-    #     return x, y
-
-    # x1_values = []
-    # y1_values = []
-    # x2_values = []
-    # y2_values = []
-
-    # # Calculate x and y values for each y1 value using the update_line_position function
-    # for i in y1_values_rk:
-    #     x, y = update_line_position(0, 0, L1, i)
-    #     x1_values.append(x)
-    #     y1_values.append(y)
-
-    # count = 0
-    # for j in y2_values_rk:
-    #     x, y = update_line_position(x1_values[count], y1_values[count], L2, j)
-    #     x2_values.append(x)
-    #     y2_values.append(y)
-    #     count += 1
-
-    # plt.figure(figsize=(8, 6))
-    # plt.plot(x1_values, y1_values, label='Massa 1')
-    # plt.plot(x2_values, y2_values, label='Massa 2', linestyle='--')
-    # plt.xlabel('X (m)')
-    # plt.ylabel('Y (m)')
-    # plt.title(f'Movimento do pendulo duplo (theta1 = {angle1}° e theta2 = {angle2}°)')
-    # plt.legend()
-    # plt.grid(True)
-    # plt.show()
-
-    # #No caso dif
-    # x1_values_dif = []
-    # y1_values_dif = []
-    # x2_values_dif = []
-    # y2_values_dif = []
-
-    # # Calculate x and y values for each y1 value using the update_line_position function
-    # for i in y1_values_rk_dif:
-    #     x, y = update_line_position(0, 0, L1, i)
-    #     x1_values_dif.append(x)
-    #     y1_values_dif.append(y)
-
-    # count = 0
-    # for j in y2_values_rk_dif:
-    #     x, y = update_line_position(x1_values_dif[count], y1_values_dif[count], L2, j)
-    #     x2_values_dif.append(x)
-    #     y2_values_dif.append(y)
-    #     count += 1
-
-    # plt.figure(figsize=(8, 6))
-    # plt.plot(x1_values_dif, y1_values_dif, label='Massa 1')
-    # plt.plot(x2_values_dif, y2_values_dif, label='Massa 2', linestyle='--')
-    # plt.xlabel('X (m)')
-    # plt.ylabel('Y (m)')
-    # plt.title(f'Movimento do pendulo duplo (theta1 = {round(angle1*dif,2)}° e theta2 = {round(angle2*dif,2)}°)')
-    # plt.legend()
-    # plt.grid(True)
-    # plt.show()
-    
-# ------------------- OSCILADOR HARMÔNICO SIMPLES -------------------
-
-############ CONDIÇÕES INICIAIS MHS ###########
-X_0  = 10
-XP_0 = 0
-
-############# PARÂMETROS MHS ##############
-M = 1
-K = 1
-W = np.sqrt(K/M)
-PHI = np.arctan2(-XP_0,(W * X_0))
-A = np.sqrt(X_0**2 + XP_0**2)
-
-############# FUNÇÃO DERIVADA MHS ################
-def f_mhs(t, y):
-    # Retorna a derivada de cada componente de y 
-    # [[x,xp] -> [xp, x2p]
-    x, xp = y
-    return np.array([xp, -(K/M) * x])
-
-############## SOLUÇÃO ANALÍTICA ############
-def x_mhs(A, W, phi, t):
-    return A * np.cos(W * t + phi)
-
-def xp_mhs(A, W, phi, t):
-    return -A * W * np.sin(W * t + phi)
-
-
-
-
-if MODELO == "mhs":
-
-    ####### APROXIMAÇÃO MHS ########
-    t0_mhs = 0
-    y0_mhs = np.array([X_0, XP_0])
-    h_mhs = 0.01
-    n_mhs = 1000
-
-    # Iterar para calcular a posição em vários passos de tempo usando RK3
-    t_values_rk = [t0_mhs]
-    y_values_rk = [y0_mhs[0]]
-    yp_values_rk = [y0_mhs[1]]
-    num_steps = n_mhs
-
-    y_mhs = y0_mhs
-    t_mhs = t0_mhs
-
-    ##### LOOP PARA MHS #####
-    for _ in range(num_steps):
-        y_mhs = RK3(f_mhs, t_mhs, y_mhs, h_mhs)
-        t_mhs += h_mhs
-        t_values_rk.append(t_mhs)
-        y_values_rk.append(y_mhs[0])
-        yp_values_rk.append(y_mhs[1])
-
-
-    # Calcular a solução analítica
-    t_values_analytical = np.linspace(t0_mhs, num_steps * h_mhs, 1000)
-    y_values_analytical = x_mhs(A, W, PHI, t_values_analytical)
-    yp_values_analytical = xp_mhs(A, W, PHI, t_values_analytical)
-
-    # Criar uma tabela com os dados
-    x_table_data = []
-    for t, y_analytical, y_rk in zip(t_values_rk, y_values_analytical, y_values_rk):
-        x_table_data.append([t, y_analytical, y_rk])
-
-    # Imprimir a tabela formatada no terminal
-    headers = ["Tempo", " X da Solução Analítica", "X da Aproximação de Runge-Kutta"]
-    print(tabulate(x_table_data, headers=headers))
-
-    # Tabela para xp
-    xp_table_data = []
-    for t, yp_analytical, yp_rk in zip(t_values_rk, yp_values_analytical, yp_values_rk):
-        xp_table_data.append([t, yp_analytical, yp_rk])
-
-    # Imprimir a tabela formatada no terminal
-    headers = ["Tempo", "X\' da Solução Analítica", "X\' da Aproximação de Runge-Kutta"]
-    print(tabulate(xp_table_data, headers=headers))
-
-    # Plotar ambas as soluções
-    plt.figure(figsize=(8, 6))
-    plt.plot(t_values_analytical, y_values_analytical, label='Solução Analítica')
-    plt.plot(t_values_rk, y_values_rk, label='Aproximação de Runge-Kutta', linestyle='--')
-    plt.xlabel('Tempo')
-    plt.ylabel('Posição')
-    plt.title('Posição - Comparação entre Solução Analítica e de Runge-Kutta para o Movimento de Oscilador Harmônico')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-
-    # Plotar ambas as soluções
-    plt.figure(figsize=(8, 6))
-    plt.plot(t_values_analytical, yp_values_analytical, label='Solução Analítica')
-    plt.plot(t_values_rk, yp_values_rk, label='Aproximação de Runge-Kutta', linestyle='--')
-    plt.xlabel('Tempo')
-    plt.ylabel('Velocidade')
-    plt.title('Velocidade - Comparação entre Solução Analítica e de Runge-Kutta para o Movimento de Oscilador Harmônico')
     plt.legend()
     plt.grid(True)
     plt.show()
