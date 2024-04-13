@@ -5,7 +5,7 @@ from tabulate import tabulate
 
 # Definir qual dos modelos irá simular
 # "pendulo", "mhs" ou null
-MODELO = "mhs"
+MODELO = "pendulo"
 
 ########### RUNGE KUTTA 3a ORDEM ###########
 def RK3(f, tk, yk, h):
@@ -106,13 +106,27 @@ if MODELO == "pendulo":
     
 
     # Criar uma tabela com os dados
-    # x_table_data = []
-    # for t, theta1_rk, theta2_rk in zip(t_values_rk, y1_values_rk, y2_values_rk):
-    #     x_table_data.append([t, theta1_rk, theta2_rk])
+    x_table_data = []
+    limit = 20
+    for t, theta1_rk, theta2_rk in zip(t_values_rk[:limit], y1_values_rk[:limit], y2_values_rk[:limit]):
+        x_table_data.append([t, theta1_rk, theta2_rk])
 
-    # # Imprimir a tabela formatada no terminal
-    # headers = ["Tempo", " Theta 1 - RK3", "Theta 2 - RK3"]
-    # print(tabulate(x_table_data, headers=headers))
+    # Criar uma tabela com os dados
+
+    # Imprimir a tabela formatada no terminal
+    headers = ["Tempo", " Theta 1 - RK3", "Theta 2 - RK3"]
+    print(tabulate(x_table_data, headers=headers))
+
+    x_table_data = []
+    begin = 20
+    end = 1000
+    intervalo = 50
+    for t, theta1_rk, theta2_rk in zip(t_values_rk[begin:end:intervalo], y1_values_rk_dif[:limit], y2_values_rk_dif[:limit]):
+        x_table_data.append([t, theta1_rk, theta2_rk])
+    
+    # Imprimir a tabela formatada no terminal
+    headers = ["Tempo", " Theta 1 - RK3", "Theta 2 - RK3"]
+    print(tabulate(x_table_data, headers=headers))
 
     # Plotar theta1 com e sem variacao das condicoes iniciais
     plt.figure(figsize=(8, 6))

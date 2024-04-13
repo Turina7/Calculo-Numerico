@@ -94,7 +94,7 @@ def estimar_ordem_convergencia(n_estimativas, t_fixo, h_inicial, num_steps_inici
                 break
 
         print("Valores para t = ", t_fixo)
-        print("h = ", h*4)
+        print("h = ", h)
         print("y_h = ", y_h)
         print("y_h2 = ", y_h2)
         print("y_2h = ", y_2h)
@@ -143,7 +143,7 @@ if MODELO == "pendulo":
     t = t0
 
     # Calcular ordem do erro de convergencia
-    n_estimativas = 5
+    n_estimativas = 10
     t_fixo = 2
     h_inicial = 0.005
     num_steps_inicial = 3000
